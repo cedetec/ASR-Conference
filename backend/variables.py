@@ -1,0 +1,55 @@
+#se dejara por defecto el idioma ingles - en wisper se realiza la traduccion al ingles desde multilenguaje
+Langs = {
+  "en": ["english", "Multilenguaje"],
+  "ar": ["arabic", "Arabico"],
+  "da": ["danish", "Danés"],
+  "es": ["spanish", "Español"],
+  "fr": ["french", "Francés"],
+  "it": ["italian", "Italiano"],
+  "ja": ["japanese", "Japonés"],
+  "ko": ["korean", "Coreano"],
+  "he": ["hebrew", "Hebreo"],
+  "zh": ["chinese", "Chino"],
+
+}
+Langs_resp = {
+  "ar": ["arabic", "Arabico"],
+  "az": ["azerbaijani", "Azerbaiyano"],
+  "ca": ["catalan", "Catalán"],
+  "zh": ["chinese", "Chino"],
+  "cs": ["czech", "Checo"],
+  "da": ["danish", "Danés"],
+  "nl": ["dutch", "Holandés"],
+  "eo": ["esperanto", "Esperanto"],
+  "en": ["english", "Ingles"],
+  "fi": ["finnish", "Finlandés"],
+  "fr": ["french", "Francés"],
+  "de": ["german", "Alemán"],
+  "el": ["greek", "Griego"],
+  "he": ["hebrew", "Hebreo"],
+  "hi": ["hindi", "Hindi"],
+  "hu": ["hungarian", "Húngaro"],
+  "id": ["indonesian", "Indonesio"],
+  "ga": ["irish", "Irlandés"],
+  "it": ["italian", "Italiano"],
+  "ja": ["japanese", "Japonés"],
+  "ko": ["korean", "Coreano"],
+  "fa": ["persian", "Persa"],
+  "pl": ["polish", "Polaco"],
+  "pt": ["portuguese", "Portugués"],
+  "ru": ["russian", "Ruso"],
+  "sk": ["slovak", "Eslovaco"],
+  "es": ["spanish", "Español"],
+  "sv": ["swedish", "Sueco"],
+  "th": ["thai", "Tailandés"],
+  "tr": ["turkish", "Turco"],
+  "uk": ["ukranian", "Ucraniano"]
+}
+models = [
+    "tiny", 
+    "base", 
+    "small", 
+    "medium", 
+    "large", 
+    "large-v2"
+]
