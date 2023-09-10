@@ -1,0 +1,64 @@
+FROM rust:1-bookworm
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    wget \
+    curl \
+    cmake \
+    git \
+    g++ \
+    ffmpeg \
+    python3 \
+    python3-pip \
+    python3.11-venv \
+    libssl-dev \
+    libc-dev \
+    python3-dev
+
+
+
+RUN python3 -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+
+RUN pip install --upgrade pip
+RUN pip install wheel
+RUN pip install bs4
+RUN pip install flask
+RUN pip install flask_cors
+#RUN pip install python_translator
+RUN pip install argostranslate
+RUN pip install setuptools-rust
+
+
+#RUN pip install -U openai-whisper
+RUN pip install uwsgi
+RUN pip install -U faster_whisper
+RUN whisper --model tiny dummy.wav; exit 0
+#RUN whisper --model base dummy.wav; exit 0
+#RUN whisper --model small dummy.wav; exit 0
+RUN whisper --model medium dummy.wav; exit 0
+#RUN whisper --model large dummy.wav; exit 0
+#RUN whisper --model large-v2 dummy.wav; exit 0
+
+#RUN wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
+#RUN dpkg -i cuda-keyring_1.1-1_all.deb
+#RUN apt-get update
+#RUN apt-get -y install cuda
+
+RUN pip install cuda-python
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
+
+
+RUN apt-get update && apt-get install -y \
+    bash \
+    nano \
+    curl
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["uwsgi", "--socket", "0.0.0.0:3000", "--protocol=http", "-w", "wsgi:app"]

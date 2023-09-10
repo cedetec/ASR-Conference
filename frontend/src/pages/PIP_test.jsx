@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Microphone from '../components/microphone';
+import Microphone from '../components/microphone_v2';
 import VideoGenerator from '../components/video_generator';
 import AudioManager from '../managers/audio_manager';
 import './pages.css';
+import SetupForm from '../components/setup_form';
 
 function PIPTest() {
   const [PrinText, SetPrinText] = useState("");
   const [SecText, SetSecText] = useState("");
   const [ResponseText, SetResponseText] = useState("");
+  const [Enabled, SetEnabled] = useState(false);
 
   /**********************Listado de variables**********************************
    * PrinText: Texto principal                                                *
@@ -31,7 +33,7 @@ function PIPTest() {
         Text2 = Text2 + Sliced[counter] + " ";
         counter++;
       }
-      setTimeout(()=>{SetResponseText(Text2)}, 500);
+      setTimeout(()=>{SetResponseText(Text2)}, 1500);
       SetResponseText(Text1);
     }else{
       SetSecText(PrinText);
@@ -42,10 +44,13 @@ function PIPTest() {
   return (
     <div className="main_page">
       <div className='main_page_microphone_container'>
-        <Microphone sendAudio={(e) => {AudioManager.SendAudio(e, SetResponseText)}}/>
+        <Microphone sendAudio={(e) => {AudioManager.SendAudio(e, SetResponseText)}} Enabled={Enabled}/>
       </div>
       <div className='pip_test_text_printer_containter'>
         <VideoGenerator TextoPrincipal={PrinText} TextoSecundario={SecText} Time={1000}/>
+      </div>
+      <div className='pip_test_setup_form'>
+        <SetupForm SetEnabled={(e)=>{SetEnabled(e)}}/>
       </div>
     </div>
   );

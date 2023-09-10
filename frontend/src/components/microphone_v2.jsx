@@ -18,6 +18,7 @@ function Microphone(props) {
    * soundDetected: Switch de deteccion de tiempo                             *
    * tiempoCumplido: Switch de tiempo para envio de bloque de audio           *
    * mediaRecorder: Contenedor del grabador de audio                          *
+   * globalSoundDetected: Switch de deteccion global de sonido                *
    ****************************************************************************/
   const [stream, setStream] = useState(null);
   const [started, setStarted] = useState(false);
@@ -29,6 +30,7 @@ function Microphone(props) {
   const [noiseChecker, setNoiseChecker] = useState(null);
   const [soundDetected, setSoundDetected] = useState(false);
   const [tiempoCumplido, setTiempoCumplido] = useState(false);
+  const [globalSoundDetected, setGlobalSoundDetected] = useState(false);
 
   const mediaRecorder = useRef(null);
 
@@ -43,6 +45,22 @@ function Microphone(props) {
           video: false,
         }).then((Stream) => {
           setStream(Stream);
+
+          //Creacion de analizador
+          const audioContext = new AudioContext();
+          const audioStreamSource = audioContext.createMediaStreamSource(Stream);
+          const analyser = audioContext.createAnalyser();
+          analyser.minDecibels = -60;
+          audioStreamSource.connect(analyser);
+            
+          const buffLength = analyser.frequencyBinCount;
+          const domaData = new Uint8Array(buffLength);
+            
+          setAnalyser(analyser);
+          setBufferLength(buffLength);
+          setDomainData(domaData);
+          console.log("Iniciando intervalo");
+          //setInterval(() => {detectSound()}, 10);
         });
       } catch (err) {
         alert(err.message);
@@ -54,10 +72,13 @@ function Microphone(props) {
 
   //Efecto para el cambio de los chunks de audio obtenido, se encarga de enviar el audio en caso de que no este vacio
   useEffect(()=>{
-    if (audioChunks.length > 0){
-      const audioBlob = new Blob(audioChunks, { type: "audio/wav; codecs=0" });
-
-      sendAudio(audioBlob);
+    if (audioChunks.length > 0){    
+      console.log("Global sound: "+globalSoundDetected);
+      if (globalSoundDetected){
+        const audioBlob = new Blob(audioChunks, { type: "audio/wav; codecs=0" });
+        sendAudio(audioBlob);
+      }
+      setGlobalSoundDetected(false);
 
       localChunks = [];
       setAudioChunks([]);
@@ -77,8 +98,8 @@ function Microphone(props) {
   useEffect(()=>{
     if (started){
       if (micActivo){
+        setTimeout(() => {setTiempoCumplido(true)}, 2000);
         setNoiseChecker(setInterval(() => {detectSound()}, 10));
-        setTimeout(() => {setTiempoCumplido(true)}, 4000);
       } else {
         ActivarMicrofono();
         clearInterval(noiseChecker);
@@ -102,20 +123,6 @@ function Microphone(props) {
     mediaRecorder.current.ondataavailable = dataAvailableFunc;
     mediaRecorder.current.onstop = stopFunc;
 
-    //Creacion de analizador
-    const audioContext = new AudioContext();
-    const audioStreamSource = audioContext.createMediaStreamSource(stream);
-    const analyser = audioContext.createAnalyser();
-    analyser.minDecibels = -60;
-    audioStreamSource.connect(analyser);
-      
-    const buffLength = analyser.frequencyBinCount;
-    const domaData = new Uint8Array(buffLength);
-      
-    setAnalyser(analyser);
-    setBufferLength(buffLength);
-    setDomainData(domaData);
-
     setMicActivo(true);
     setTiempoCumplido(false);
 
@@ -130,14 +137,19 @@ function Microphone(props) {
 
   //Funcion encargada de detectar el ruido
   const detectSound = () => {
-    var Sound = false;
-    analyserGlobal.getByteFrequencyData(domainData);
-    for(let i = 0; i < bufferLength; i++){
-      if(domainData[i] > 0){
-        Sound = true;
+    if(analyserGlobal && bufferLength && domainData){
+      var Sound = false;
+      analyserGlobal.getByteFrequencyData(domainData);
+      for(let i = 0; i < bufferLength; i++){
+        if(domainData[i] > 0){
+          Sound = true;
+        }
+      }
+      setSoundDetected(Sound);
+      if (Sound){
+        setGlobalSoundDetected(true);
       }
     }
-    setSoundDetected(Sound);
   };
 
   //Funcion "ondataavailable" para el media recorder
@@ -163,13 +175,18 @@ function Microphone(props) {
     {
       started ?
         <img src="img/Microfono.svg" className={Enabled ? 'microphone' : 'microphone desactivate'} title='Desactivar microfono' alt="" onClick={(e) => {
-                                                                                                    DesactivarMicrofono(e);
-                                                                                                    setStarted(false);
+                                                                                                    if (Enabled){
+                                                                                                      DesactivarMicrofono(e);
+                                                                                                      setStarted(false);
+                                                                                                    }
+                                                                                                    
                                                                                                   }} />
           :
         <img src="img/MicrofonoMute.svg" className={Enabled ? 'microphone' : 'microphone desactivate'} title='Activar microfono' alt="" onClick={(e) => {
-                                                                                                    ActivarMicrofono(e);
-                                                                                                    setStarted(true);
+                                                                                                    if (Enabled){
+                                                                                                      ActivarMicrofono(e);
+                                                                                                      setStarted(true);
+                                                                                                    }
                                                                                                   }} />
     }
     <div className={soundDetected?"voicePrinter voiceOn":"voicePrinter voiceOff"} />

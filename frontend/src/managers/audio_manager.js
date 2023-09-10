@@ -7,18 +7,17 @@ const AudioManager = (function() {
     //Se preparan los datos para enviarse
     const formData = new FormData();
     formData.append('audio', Audio);
-    console.log("Enviando audio - >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>") 
+
     //Se envian los datos
-    axios.post(`http://localhost:3000/`,
+    axios.post(`http://localhost:3000`,
       formData, 
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          'Access-Control-Allow-Methods': 'GET, POST',
+          'Content-Type': 'multipart/form-data'
         }
       }
     ).then((response) => {
-      //Se guarda larespuesta
+      //Se guarda la respuesta
       setResponseText(response.data);
     }).catch((error) => {
       //En caso de error se imprime
