@@ -11,7 +11,6 @@ import time
 app = Flask(__name__)
 CORS(app)
 
-
 LangEntrada = ""
 LangSalida = ""
 
@@ -32,6 +31,7 @@ print("Servidor listo")
 def process_audio():
     global audio_data
     global cont
+    global archivo
     probabilidad = 0.0
     results = ''
     results_texto = ''
@@ -91,6 +91,13 @@ def process_audio():
                 print("STT5---: %s",str(argostranslate.translate.translate(results_texto, "en", LangSalida)))
                 fin = time.time()
                 print(f"Tiempo de ejecucion en procesamiento global es: {fin - inicio0}")
+
+            with open('resultados.txt', 'a', encoding='utf-8') as archivo:
+                archivo.write(str(inicio0)+' -> '+ results+'\n')
+            
+            with open('resultados_original.txt', 'a', encoding='utf-8') as archivo:
+                archivo.write(str(inicio0)+' -> '+results_texto+'\n')
+                
             return str(results)
         
         except  Exception as error:
@@ -136,17 +143,23 @@ def start_app():
           #  model = whisper.load_model(modelo)
            # model = WhisperModel(modelo, device="cpu", compute_type="int8")
             model = WhisperModel(modelo, device="cuda", compute_type="float16")
-
+        except Exception as error:
+            print(f"Error: {error}")
+            return jsonify({"error": "El modelo de audio no cargo correctamente"}), 400
+        
+        try:
             if (str(LangEntrada) != "en"):
+                print(f'./lang_packs/translate-{LangEntrada}_en.argosmodel')
                 package.install_from_path(f'./lang_packs/translate-{LangEntrada}_en.argosmodel')
 
             if (str(LangSalida) != "en"):
+                print(f'./lang_packs/translate-en_{LangSalida}.argosmodel')
                 package.install_from_path(f'./lang_packs/translate-en_{LangSalida}.argosmodel')
 
         except Exception as error:
             print(f"Error: {error}")
-            return jsonify({"error": "El modelo de audio no cargo correctamente"}), 400
-            
+            return jsonify({"error": "El modelo de traduccion no cargo correctamente"}), 400
+
         return jsonify({"message": "Solicitud recibida correctamente"}), 200
     else:
         return jsonify({"error": "Faltan entradas de texto"}), 400

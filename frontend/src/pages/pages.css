@@ -1,8 +1,8 @@
 .main_page_microphone_container {
-  height: 50%;
-  width: 50%;
+  height: auto;
+  width: 20%;
   position: absolute;
-  left: 0%;
+  left: 12%;
   top: 5%;
   display: flex;
   flex-direction: row;
@@ -25,18 +25,66 @@
   top: 60%;
 }
 
-.pip_test_text_printer_containter{
+.pip_test_text_printer_containter {
   height: 25%;
-  width: 75%;
+  width: 80%;
   position: absolute;
-  left: 12%;
-  top: 60%;
+  left: 10%;
+  top: 55%;
 }
 
 .pip_test_setup_form {
-  height: 300px;
+  min-height: 250px;
+  height: 25%;
   left: 65%;
   position: absolute;
   top: 5%;
-  width: 350px;
+  width: 20%;
+  min-width: 350px;
+  background-color: #f2effd;
+  border-radius: 30px;
+  padding: 10px 30px 10px 30px;
+}
+
+.pip_test_configurations {
+  height: 30%;
+  width: 20%;
+  position: absolute;
+  left: 40%;
+  top: 5%;
+  border-radius: 30px;
+  background-color: #f2effd;
+  padding: 10px 30px 10px 30px;
+  min-height: 260px;
+}
+
+.pip_test_neurovision_logo {
+  height: -moz-fit-content;
+  height: 80%;
+  width: auto;
+  border-radius: 40px;
+  float: left;
+}
+
+.pip_test_logo_image {
+  width: auto;
+  height: 100%;
+  float: left;
+}
+
+.pip_test_neurovision_text {
+  height: auto;
+}
+
+.pip_test_footer {
+  width: 100%;
+  height: 10%;
+  position: absolute;
+  transform: translateY(-100%);
+  top: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: #c5c4e3;
 }

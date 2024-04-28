@@ -9,10 +9,12 @@ echo "BUILD DE BACKEND CON DOCKER-CONTAINER"
 echo "==========================================="
 cp ./docker_files/backend/Dockerfile backend/
 cp ./docker_files/backend/build-docker.sh backend/
+cp -r ./lang_packs/ backend/
 cd ./backend/
 sudo ./build-docker.sh
 sudo rm Dockerfile
 sudo rm build-docker.sh
+sudo rm -r lang_packs/
 cd ..
 else
 echo "========================= Ok ==========================================================="

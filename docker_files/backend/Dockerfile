@@ -29,7 +29,7 @@ RUN pip install bs4
 RUN pip install flask
 RUN pip install flask_cors
 #RUN pip install python_translator
-RUN pip install argostranslate
+RUN pip install argostranslate==1.9.0
 RUN pip install setuptools-rust
 
 RUN pip install cuda-python
@@ -38,10 +38,11 @@ RUN pip3 install  torch torchvision torchaudio --index-url https://download.pyto
 #RUN pip install -U openai-whisper
 RUN pip install uwsgi
 RUN pip install -U faster_whisper
-RUN whisper --model tiny dummy.wav; exit 0
+
+#RUN whisper --model tiny dummy.wav; exit 0
 #RUN whisper --model base dummy.wav; exit 0
 #RUN whisper --model small dummy.wav; exit 0
-RUN whisper --model medium dummy.wav; exit 0
+#RUN whisper --model medium dummy.wav; exit 0
 #RUN whisper --model large dummy.wav; exit 0
 #RUN whisper --model large-v2 dummy.wav; exit 0
 
@@ -81,6 +82,14 @@ RUN apt-get update && apt-get install -y \
     curl
 
 COPY . .
+
+#ADD ../lang_packs/ /app/
+
+#COPY ../whisper_files/models--guillaumekln--faster-whisper-tiny/ /root/.cache/huggingface/hub/
+#COPY ../whisper_files/models--guillaumekln--faster-whisper-base/ /root/.cache/huggingface/hub/
+#COPY ../whisper_files/models--guillaumekln--faster-whisper-small/ /root/.cache/huggingface/hub/
+#COPY ../whisper_files/models--guillaumekln--faster-whisper-medium/ /root/.cache/huggingface/hub/
+#COPY ../whisper_files/models--guillaumekln--faster-whisper-large-v2/ /root/.cache/huggingface/hub/
 
 EXPOSE 3000
 

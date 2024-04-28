@@ -4,12 +4,18 @@ import VideoGenerator from '../components/video_generator';
 import AudioManager from '../managers/audio_manager';
 import './pages.css';
 import SetupForm from '../components/setup_form';
+import Configurations from '../components/configurations';
 
 function PIPTest() {
   const [PrinText, SetPrinText] = useState("");
   const [SecText, SetSecText] = useState("");
   const [ResponseText, SetResponseText] = useState("");
   const [Enabled, SetEnabled] = useState(false);
+  const [soundDetected, setSoundDetected] = useState(false);
+  const [minDecibels, setMinDecibels] = useState(-60);
+  const [tickResetMic, setTickResetMic] = useState(null);
+  const [micReady, setMicReady] = useState(false);
+  const [selectedInputDevice, setSelectedInputDevice] = useState('');
 
   /**********************Listado de variables**********************************
    * PrinText: Texto principal                                                *
@@ -44,13 +50,34 @@ function PIPTest() {
   return (
     <div className="main_page">
       <div className='main_page_microphone_container'>
-        <Microphone sendAudio={(e) => {AudioManager.SendAudio(e, SetResponseText)}} Enabled={Enabled}/>
+        <Microphone 
+                    sendAudio={(e) => {AudioManager.SendAudio(e, SetResponseText)}} 
+                    Enabled={Enabled} 
+                    soundDetected={soundDetected} 
+                    setSoundDetected={(e) => {setSoundDetected(e)}}
+                    minDecibels={minDecibels}
+                    tickResetMic={tickResetMic}
+                    setTickResetMic={(e) => {setTickResetMic(e)}}
+                    micReady={micReady}
+                    setMicReady={(e) => {setMicReady(e)}}
+                    selectedInputDevice={selectedInputDevice}/>
       </div>
-      <div className='pip_test_text_printer_containter'>
-        <VideoGenerator TextoPrincipal={PrinText} TextoSecundario={SecText} Time={1000}/>
+      <div className='pip_test_configurations'>
+        <Configurations
+                    soundDetected={soundDetected}
+                    minDecibels={minDecibels}
+                    setMinDecibels={(e) => {setMinDecibels(e)}}
+                    setTickResetMic={(e) => {setTickResetMic(e)}}
+                    micReady={micReady}
+                    serverReady={Enabled}
+                    selectedInputDevice={selectedInputDevice}
+                    setSelectedInputDevice={(e) => {setSelectedInputDevice(e)}}/>
       </div>
       <div className='pip_test_setup_form'>
         <SetupForm SetEnabled={(e)=>{SetEnabled(e)}}/>
+      </div>
+      <div className='pip_test_text_printer_containter'>
+        <VideoGenerator TextoPrincipal={PrinText} TextoSecundario={SecText} Time={1000}/>
       </div>
     </div>
   );

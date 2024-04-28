@@ -3,7 +3,7 @@ import axios from 'axios';
 //Modulo para manejo del servidor
 const ServerManager = (function() {
   //Funcion para enviar las configuraciones del servidor
-  const StartServer = (model, langEntrada, langSalida, SetEnabled, setErrorText) => {
+  const StartServer = (model, langEntrada, langSalida, SetEnabled, setWaitingResponse, setErrorText) => {
     //Se preparan los datos para enviarse
     const formData = new FormData();
     formData.append('Modelo', model);
@@ -17,12 +17,15 @@ const ServerManager = (function() {
       //Se guarda la respuesta
       if (response.status === 200) {
         SetEnabled(true);
+        setWaitingResponse(false);
       } else {
         SetEnabled(false);
+        setWaitingResponse(false);
         setErrorText(response.data);
       }
     }).catch((error) => {
       //En caso de error se imprime
+      setWaitingResponse(false);
       console.log("Error")
       console.log(error);
     })

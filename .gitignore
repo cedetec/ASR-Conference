@@ -1,0 +1,10 @@
+node_modules/
+frontend/node_modules
+frontend/build
+backend/__pycache__/
+backend/neuta_back/
+backend/Entorno/
+backend/lang_packs/
+backend/files/
+lang_packs/*
+whisper_files/*

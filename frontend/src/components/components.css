@@ -53,15 +53,21 @@
   border-radius: 20px;
 }
 
+.switchPrinter {
+  height: 10px;
+  width: 50px;
+  border-radius: 5px;
+}
+
 .desactivate {
   filter: grayscale(100%);
 }
 
-.voiceOn {
+.TrueOption {
   background-color: green;
 }
 
-.voiceOff {
+.FalseOption {
   background-color: red;
 }
 
@@ -94,6 +100,15 @@
   margin: 0;
   padding: 0 1em 0 10px;
   width: 45%;
+  transition: all 200ms;
+}
+
+.selectStyle:hover {
+  background-color: #d6d6d6;
+}
+
+.selectStyle:active {
+  background-color: #fff;
 }
 
 .butonStyle {
@@ -103,4 +118,30 @@
   width: 150px;
   border-radius: 15px;
   font-size: 20px;
+  transition: all 200ms;
+}
+
+.butonStyle:hover {
+  background-color: #d6d6d6;
+}
+
+.butonStyle:active{
+  background-color: #707070;
+}
+
+.configurations {
+  height: 100%;
+  width: 100%;
+  background-color: transparent;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.Loading {
+  background-color: transparent;
+  height: 50px;
+  width: 50px;
 }

@@ -3,7 +3,7 @@ import './components.css';
 
 //Componente del microfono
 function Microphone(props) {
-  const { sendAudio, Enabled } = props;
+  const { sendAudio, Enabled, soundDetected, setSoundDetected, minDecibels, tickResetMic, setTickResetMic, micReady, setMicReady, selectedInputDevice } = props;
 
   /**********************Listado de variables**********************************
    * sendAudio: Conexion al audio manager                                     *
@@ -28,7 +28,7 @@ function Microphone(props) {
   const [bufferLength, setBufferLength] = useState(0);
   const [analyserGlobal, setAnalyser] = useState(null);
   const [noiseChecker, setNoiseChecker] = useState(null);
-  const [soundDetected, setSoundDetected] = useState(false);
+  //const [soundDetected, setSoundDetected] = useState(false);
   const [tiempoCumplido, setTiempoCumplido] = useState(false);
   const [globalSoundDetected, setGlobalSoundDetected] = useState(false);
 
@@ -38,42 +38,35 @@ function Microphone(props) {
   
   //Efecto de iniciacion, solicita y genera stream de audio
   useEffect(()=>{
-    if ("MediaRecorder" in window) {
-      try {
-        navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: false,
-        }).then((Stream) => {
-          setStream(Stream);
-
-          //Creacion de analizador
-          const audioContext = new AudioContext();
-          const audioStreamSource = audioContext.createMediaStreamSource(Stream);
-          const analyser = audioContext.createAnalyser();
-          analyser.minDecibels = -60;
-          audioStreamSource.connect(analyser);
-            
-          const buffLength = analyser.frequencyBinCount;
-          const domaData = new Uint8Array(buffLength);
-            
-          setAnalyser(analyser);
-          setBufferLength(buffLength);
-          setDomainData(domaData);
-          console.log("Iniciando intervalo");
-          //setInterval(() => {detectSound()}, 10);
-        });
-      } catch (err) {
-        alert(err.message);
-      }
-    } else {
-      alert("The MediaRecorder API is not supported in your browser.");
-    }
+    crearMicrofono();
   }, []);
+
+  useEffect(()=>{
+    if (tickResetMic){
+      setMicReady(false);
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+      if (analyserGlobal) {
+        analyserGlobal.disconnect();
+      }
+      crearMicrofono();
+      setTickResetMic(false);
+    }
+  }, [tickResetMic]);
+
+  useEffect(()=>{
+    if (micReady){
+      setNoiseChecker(setInterval(() => {detectSound()}, 10));
+    }else{
+      clearInterval(noiseChecker);
+      setNoiseChecker(null);
+    }
+  }, [micReady]);
 
   //Efecto para el cambio de los chunks de audio obtenido, se encarga de enviar el audio en caso de que no este vacio
   useEffect(()=>{
     if (audioChunks.length > 0){    
-      console.log("Global sound: "+globalSoundDetected);
       if (globalSoundDetected){
         const audioBlob = new Blob(audioChunks, { type: "audio/wav; codecs=0" });
         sendAudio(audioBlob);
@@ -98,16 +91,16 @@ function Microphone(props) {
   useEffect(()=>{
     if (started){
       if (micActivo){
-        setTimeout(() => {setTiempoCumplido(true)}, 2000);
-        setNoiseChecker(setInterval(() => {detectSound()}, 10));
+        setTimeout(() => {setTiempoCumplido(true)}, 3000);
+        //setNoiseChecker(setInterval(() => {detectSound()}, 10));
       } else {
         ActivarMicrofono();
-        clearInterval(noiseChecker);
-        setNoiseChecker(null);
+        //clearInterval(noiseChecker);
+        //setNoiseChecker(null);
       }
     }else{
-      clearInterval(noiseChecker);
-      setNoiseChecker(null);
+      //clearInterval(noiseChecker);
+      //setNoiseChecker(null);
     }
   },[micActivo, started]);
 
@@ -170,6 +163,45 @@ function Microphone(props) {
     setAudioChunks(localChunks);
   };
 
+  const crearMicrofono = () => {
+    if ("MediaRecorder" in window) {
+      if(selectedInputDevice != ""){
+        try {
+          navigator.mediaDevices.getUserMedia({
+            audio: { deviceId: { exact: selectedInputDevice } },
+            video: false,
+          }).then((Stream) => {
+            setStream(Stream);
+  
+            console.log("Microfono con "+minDecibels+"dB minimos")
+  
+            //Creacion de analizador
+            const audioContext = new AudioContext();
+            const audioStreamSource = audioContext.createMediaStreamSource(Stream);
+            const analyser = audioContext.createAnalyser();
+            analyser.minDecibels = minDecibels;
+            audioStreamSource.connect(analyser);
+              
+            const buffLength = analyser.frequencyBinCount;
+            const domaData = new Uint8Array(buffLength);
+              
+            setAnalyser(analyser);
+            setBufferLength(buffLength);
+            setDomainData(domaData);
+            //setInterval(() => {detectSound()}, 10);
+            setMicReady(true);
+          });
+        } catch (err) {
+          alert(err.message);
+        }
+      } else {
+        alert("Seleccione un dispositivo de entrada");
+      }
+    } else {
+      alert("La API de MediaRecorder no funciona en tu navegador.");
+    }
+  }
+
   return (
     <>
     {
@@ -189,7 +221,6 @@ function Microphone(props) {
                                                                                                     }
                                                                                                   }} />
     }
-    <div className={soundDetected?"voicePrinter voiceOn":"voicePrinter voiceOff"} />
     </>
   );
 }
